@@ -62,20 +62,26 @@ const Session = () => {
         const userSessionDrinks = await getSessionDrinks(session.$id);
         setSessionDrinksData(userSessionDrinks || []);
 
-        const invites = await getSessionInvitesForSession();
-        setPendingInvitesData(invites || []);
+      const invites = await getSessionInvitesForSession();
+      setPendingInvitesData(invites || []);
 
-        const chartData = await getChartData(session.$id);
-        setChartData(chartData || { labels: [], datasets: [{ data: [] }] });
+      const data = await getChartData(session?.$id || "");
+      if (data?.labels?.length && data?.datasets?.length) {
+        setChartData(data);
       } else {
-        goToPendingInvites();
+        console.warn("Invalid chart data:", data);
+        setChartData({ labels: [], datasets: [{ data: [] }] }); // Default empty chart
       }
-    } catch (error) {
-      alert(`Error fetching data: ${error}`);
-    } finally {
-      setIsLoading(false);
+    } else {
+      goToPendingInvites();
     }
-  };
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    alert(`Error fetching data: ${error}`);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const totalDrinks = attendantsData ? attendantsData.reduce((acc, att) => acc + (att.total_user_drink || 0), 0) : 0;
   const totalPoints = attendantsData ? attendantsData.reduce((acc, att) => acc + (att.total_user_points || 0), 0) : 0;

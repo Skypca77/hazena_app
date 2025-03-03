@@ -8,7 +8,6 @@
 import { View, Text, ScrollView, Image, Alert  } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import images from '@/constants/images'
 import FormField from '@/components/FormField'
 import { useState } from 'react'
 import CustomButton from '@/components/CustomButton'
@@ -54,7 +53,7 @@ const SignUp = () => {
       <ScrollView>
         <View className='w-full min-h-[90vh] justify-center px-4 my-6'>
           <View className="items-center justify-center mt-5">
-            <Image source={images.logo}/>
+            <Image source={require('@/assets/images/VUTHazena.png')}  style={{ width: 200, height: 200 }}/>
           </View>
           <Text className="text-3xl font-semibold mt-10">Log-in to DrinksTeam</Text>
 

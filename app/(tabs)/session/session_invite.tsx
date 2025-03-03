@@ -12,7 +12,6 @@ import { Ionicons } from '@expo/vector-icons'
 import FriendTab from '@/components/FriendTab'
 import TopBar from '@/components/TopBar'
 import { addInvite, getActiveSession, getFriends, getSessionAttendants, getInvitableFriends } from '@/lib/aw/index'
-import { getActionFromState } from '@react-navigation/native'
 import { router, useFocusEffect } from 'expo-router'
 
 const session_invite = () => {
@@ -82,6 +81,7 @@ const session_invite = () => {
         {!isLoading && (<ScrollView className="mt-2">
           {friendData && friendData.map((friend) => (
               <FriendTab
+                  id={friend.$id}
                   key={friend.$id}
                   title={friend.username}
                   btnText={'Invite'}

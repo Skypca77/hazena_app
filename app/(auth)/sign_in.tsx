@@ -7,7 +7,6 @@
 import { View, Text, ScrollView, Image, Alert  } from 'react-native'
 import React from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import images from '@/constants/images'
 import FormField from '@/components/FormField'
 import { useState } from 'react'
 import CustomButton from '@/components/CustomButton'
@@ -16,24 +15,25 @@ import { sign_in } from '@aw/index'
 
 const SignIn = () => {
   const [form, setForm] = useState({
-    email: '',
+    emailOrName: '',
     password: ''
   })
 
   const [isSubmit, setIsSubmit] = useState(false)
 
   const submit = async () => {
-    if(form.email === "" || form.password === "") {
+    if(form.emailOrName === "" || form.password === "") {
       Alert.alert('Error', 'Fill all the fields')
+      return;
     }
 
     setIsSubmit(true);
 
-    try {
-      await sign_in(form.email, form.password);
-      router.replace('/session');
-    } catch (e) {
-      Alert.alert('Error', e.message);
+  try {
+    // Check if the input is an email or a name
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.emailOrName);
+    await sign_in(isEmail ? form.emailOrName : '', form.password);
+    router.replace('/session');
     }
     finally {
       setIsSubmit(false);
@@ -46,14 +46,14 @@ const SignIn = () => {
       <ScrollView>
         <View className='w-full min-h-[90vh] justify-center px-4 my-6'>
           <View className="items-center justify-center mt-5">
-            <Image source={images.logo}/>
+            <Image source={require('@/assets/images/VUTHazena.png')} style={{ width: 200, height: 200 }}/>
           </View>
-          <Text className="text-3xl font-semibold mt-10">Log-in to DrinksTeam</Text>
+          <Text className="text-3xl font-semibold mt-10">Log-in to Handball app</Text>
   
           <FormField
-            title="Email"
-            value={form.email}
-            handleChangeText={(e) => setForm({...form, email: e})}
+            title="Email or Name"
+            value={form.emailOrName}
+            handleChangeText={(e) => setForm({...form, emailOrName: e})}
             otherStyles="mt-5"
             keyBoardType="email-address"
           />

@@ -1,17 +1,13 @@
-/************************/
-/*  Name: Jan Skovajsa  */
-/*  Login: xskova01     */
-/*  Date: 12.14.2024    */
-/************************/
-
-import React, { useState } from 'react';
-import { SafeAreaView, Text, View, TextInput, Modal, TouchableOpacity, Platform, ScrollView } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import DatePicker from 'react-datepicker';
-import 'react-datepicker/dist/react-datepicker.css';
-import { addSession, addUserSession, getCurrentUser, getSessionInvitesForUser, updateInvite } from '@/lib/aw/index';
+import React, { useState, useCallback } from 'react';
+import { 
+    SafeAreaView, Text, View, TextInput, Modal, TouchableOpacity, Platform, ScrollView ,Button
+} from 'react-native';
+import { 
+    addSession, addUserSession, getCurrentUser, getSessionInvitesForUser, updateInvite 
+} from '@/lib/aw/index';
 import { router, useFocusEffect } from 'expo-router';
 import TopBar from '@/components/TopBar';
+import DatePicker from 'react-native-date-picker'
 
 const PendingInvites = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -29,18 +25,11 @@ const PendingInvites = () => {
     } catch (e) {
       alert(`Error navigating to session invite: ${e}`);
     }
-  }
-
-  useFocusEffect(
-    React.useCallback(() => {
-      setIsLoading(true);
-      fetchData();
-      setIsLoading(false);
-    }, [])
-  );
+  };
 
   const fetchData = async () => {
     try {
+      setIsLoading(true);
       const user = await getCurrentUser();
       if (user) setUserData(user);
 
@@ -48,61 +37,53 @@ const PendingInvites = () => {
       setPendingInvites(invites || []);
     } catch (error) {
       alert(error);
-    }
-  }
-
-  const handleAccept = async (session: any, invite: any) => {
-    setIsLoading(true);
-    try{
-      // create user session relationship
-      await addUserSession(session);
-      // set invite to accepted
-      await updateInvite(invite, 'accepted');
-      // redirect to session
-      goToSession();
-    } catch (error){
-      alert(error);
-    }finally{
+    } finally {
       setIsLoading(false);
     }
-    
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
+
+  const handleAccept = async (session: any, invite: any) => {
+    try {
+      setIsLoading(true);
+      await addUserSession(session);
+      await updateInvite(invite, 'accepted');
+      goToSession();
+    } catch (error) {
+      alert(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDecline = async (session: any, invite: any) => {
-    // set invite to declined
     await updateInvite(invite, 'declined');
     fetchData();
   };
 
   const handleCreateSession = async () => {
-    // if name not provided use place
-    const name = newSessionName.trim() || `${newSessionPlace.trim()}`;
+    const name = newSessionName.trim() || newSessionPlace.trim();
     if (!name) return alert('Specify name or place');
-    
-    // create session
-    const session = await addSession(name, newSessionDate.toISOString(), newSessionPlace.trim());
 
-    // add this user to newly created session
+    const session = await addSession(name, newSessionDate.toISOString(), newSessionPlace.trim());
     await addUserSession(session);
 
-    // reset fields
     setNewSessionName('');
     setNewSessionPlace('');
     setNewSessionDate(new Date());
     setIsModalVisible(false);
-
-    // redirect
     goToSession();
-  };
-
-  const handleDateChange = (date: Date | null) => {
-    if (date) setNewSessionDate(date);
   };
 
   return (
     <SafeAreaView className="flex-1 bg-mainBackground">
       <View>
-          <Text>pending</Text>
+          <Text>Pending session</Text>
           <Text> </Text>
       </View>
       <TopBar />
@@ -169,36 +150,25 @@ const PendingInvites = () => {
               className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
             />
 
-            <Text className="mb-2">Select Date:</Text>
-            {Platform.OS === 'web' ? (
-              <DatePicker
-                selected={newSessionDate}
-                onChange={handleDateChange}
-                showTimeSelect
-                dateFormat="Pp"
-                className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
-              />
-            ) : (
-              <TouchableOpacity
-                onPress={() => setIsDatePickerVisible(true)}
-                className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
-              >
-                <Text>{newSessionDate.toLocaleString()}</Text>
-              </TouchableOpacity>
-            )}
+            <TouchableOpacity
+              onPress={() => setIsDatePickerVisible(true)}
+              className="border border-gray-300 rounded-lg p-3 mb-4 text-lg"
+            >
+              <Text>{newSessionDate.toLocaleString()}</Text>
+            </TouchableOpacity>
 
-            {isDatePickerVisible && Platform.OS !== 'web' && (
-              <DateTimePicker
-                value={newSessionDate}
-                mode="datetime"
-                display="default"
-                onChange={(event, selectedDate) => {
-                  const currentDate = selectedDate || newSessionDate;
-                  setIsDatePickerVisible(false);
-                  handleDateChange(currentDate);
-                }}
-              />
-            )}
+            <DatePicker
+              modal
+              open={isDatePickerVisible}
+              date={newSessionDate}
+              onConfirm={(date) => {
+                setIsDatePickerVisible(false)
+                setNewSessionDate(date)
+              }}
+              onCancel={() => {
+                setIsDatePickerVisible(false)
+              }}
+            />
 
             <View className="flex-row justify-around mt-4">
               <TouchableOpacity onPress={handleCreateSession}>

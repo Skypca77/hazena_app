@@ -89,11 +89,11 @@ const createFriend = () => {
         <ScrollView className="mt-2 h-full">
         {usersWithoutFriends && usersWithoutFriends.map((user) => (
           <FriendTab
-          key={user.$id}
-          id={user.$id}
-          title={user.username}
-          btnText={'Send friend request'}
-          onPress={() => handleRequest(user)}
+            key={user.$id}
+            id={user.$id}
+            title={user.username}
+            btnText={'Send friend request'}
+            onPress={() => handleRequest(user)}
           />
           ))}
         </ScrollView>
