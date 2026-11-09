@@ -83,7 +83,13 @@ const Archive = () => {
                 <ScrollView className="mt-2">
                     {/* Display archived sessions */}
                     {sessions.map((session) => (
-                        <TouchableOpacity key={session.$id} onPress={() => router.push({ pathname: `/archive/${session.session_id.$id}` })}>
+                        <TouchableOpacity
+                            key={session.$id}
+                            onPress={() => router.push({
+                                pathname: '/archive/[sessionId]',
+                                params: { sessionId: session.session_id?.$id ?? '' },
+                            })}
+                        >
                             <View className='rounded-xl bg-fields my-3 ml-2 p-4'>
                                 {/* Display session name, start time and total points for active user, the time is shown in DD/MM/YYYY, HH:MM  format */}
                                 <View className='flex-row justify-between'>

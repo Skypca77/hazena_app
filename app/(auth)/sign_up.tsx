@@ -24,25 +24,20 @@ const SignUp = () => {
   const [isSubmit, setIsSubmit] = useState(false)
 
   const submit = async () => {
-    if(form.username === "" || form.email  === "" || form.password  === "") {
-      Alert.alert('Error', 'Fill all the fields')
+    if (form.username === '' || form.email === '' || form.password === '') {
+      Alert.alert('Error', 'Fill all the fields');
+      return;
     }
-
 
     setIsSubmit(true);
 
     try {
-
-      
-
-      const result = await createUser(form.email, form.password, form.username);
-
+      await createUser(form.email, form.password, form.username);
       router.replace('/session');
-
-    } catch (e) {
-      Alert.alert('Error', e.message);
-    }
-    finally {
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Something went wrong';
+      Alert.alert('Error', message);
+    } finally {
       setIsSubmit(false);
     }
   }

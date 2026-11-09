@@ -1,0 +1,18 @@
+### Build
+```
+npx expo start
+```
+
+### TODO:
+- udelat z toho nejen hazenkarskou aplikaci
+- udelat perzistentni ukladani a neperzistentni pro zrychleni aplikace (import AsyncStorage from '@react-native-async-storage/async-storage';)
+
+
+### BUGS:
+
+# LOGIN:
+- there is a instance where i logged in as a non signed user, it was a brock account from testing
+
+
+### Refactor done:
+

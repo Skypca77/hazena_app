@@ -4,18 +4,39 @@
 /*  Date: 12.14.2024    */
 /************************/
 
-import { getAttendantsFromSession } from '@/lib/appwrite';
+import { getAttendantsFromSession } from '@/lib/aw';
 import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, Modal } from 'react-native';
 
-const PendingInvite = ({ title, onAccept, onDecline, session }) => {
+interface PendingInviteProps {
+  title: string;
+  onAccept: () => void;
+  onDecline: () => void;
+  session: { $id: string } | null;
+}
+
+interface AttendantRecord {
+  total_user_points: number;
+  status: string;
+  user_id: {
+    username: string;
+  };
+}
+
+const PendingInvite = ({ title, onAccept, onDecline, session }: PendingInviteProps) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [attendantsData, setAttendantsData] = useState<any | null>(null);
+  const [attendantsData, setAttendantsData] = useState<AttendantRecord[] | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!session) {
+        setAttendantsData(null);
+        return;
+      }
+
       const attendants = await getAttendantsFromSession(session);
-      attendants ? setAttendantsData(attendants) : setAttendantsData(null);
+      const typedAttendants = (attendants as unknown as AttendantRecord[] | undefined) ?? null;
+      setAttendantsData(typedAttendants);
     };
     fetchData();
   }, [session]);
@@ -55,8 +76,9 @@ const PendingInvite = ({ title, onAccept, onDecline, session }) => {
 
             {attendantsData &&
               attendantsData
-                .sort((a, b) => b.total_user_points - a.total_user_points)
-                .map((attendant, index) => (
+                .slice()
+                .sort((a: AttendantRecord, b: AttendantRecord) => b.total_user_points - a.total_user_points)
+                .map((attendant: AttendantRecord, index: number) => (
                   <View
                     key={index}
                     className={`flex-row justify-between items-center p-4 rounded-lg mb-2 ${

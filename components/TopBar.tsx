@@ -6,7 +6,7 @@
 /*  Date: 12.15.2024        */
 /****************************/
 
-import { View, TouchableOpacity, Alert, Text } from 'react-native'
+import { View, TouchableOpacity, Alert, Text, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Ionicons } from '@expo/vector-icons'
 import { router, useFocusEffect } from 'expo-router'
@@ -14,8 +14,9 @@ import { getFriendRequestsForUser, getCurrentUser } from '@/lib/aw'
 
 // Component to display the top navigation bar
 const TopBar = () => {
-
     const [RequestsCount, setRequestsCount] = useState(0);
+    const iconSize = Platform.OS === 'web' ? 60 : 50;
+    const iconColor = Platform.OS === 'web' ? '#222' : '#fff';
 
     // Function to fetch friend requests
     const fetchRequests = async () => {
@@ -45,16 +46,18 @@ const TopBar = () => {
     const goToProfile = async () => {
         try {
             router.push('/profile');
-        } catch (e) {
-            Alert.alert('Error', e.message);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Something went wrong';
+            Alert.alert('Error', message);
         }
     }
     // Function to navigate to the requests page
     const goToRequests = async () => {
         try {
             router.push('/requests');
-        } catch (e) {
-            Alert.alert('Error', e.message);
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Something went wrong';
+            Alert.alert('Error', message);
         }
     }
 
@@ -82,7 +85,7 @@ const TopBar = () => {
         </TouchableOpacity>
         {/* Button to navigate to the profile page */}
         <TouchableOpacity className='mr-2' onPress={goToProfile}>
-            <Ionicons name="person" size={50} color='grey' />
+            <Ionicons name="person" size={iconSize} color={iconColor} />
         </TouchableOpacity>
     </View>
   )

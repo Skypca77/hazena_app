@@ -1,9 +1,3 @@
-/****************************/
-/*  Name: Miroslav Zárecký  */
-/*  Login: xzarec02         */
-/*  Date: 12.14.2024        */
-/****************************/
-
 import { View, Text, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'

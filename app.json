@@ -12,20 +12,26 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "ios": {
-      "supportsTablet": true
-    },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/VUTHazena.png",
+        "foregroundImage": "./assets/images/VUTHazenamini.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.itu.drinksteam"
     },
+    "ios": {
+      "supportsTablet": true,
+      "icon": "./assets/images/VUTHazenamini.png",
+      "bundleIdentifier": "com.itu.drinksteam",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/images/VUTHazenamini.png",
+      "display": "standalone"
     },
     "plugins": [
       "expo-router"

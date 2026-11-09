@@ -160,7 +160,7 @@ const Session = () => {
             </View>
           </TouchableOpacity>
         )}
-
+        <Text>Invited Users:</Text>
         {pendingInvitesData?.map((invite, index) => (
           <View key={index} className="flex-row justify-between items-center bg-gray-800 p-4 rounded-lg mb-2">
             <TouchableOpacity onPress={() => router.push(`/profile/${invite.receiver_id.$id}`)}>
@@ -168,7 +168,6 @@ const Session = () => {
                 {invite.receiver_id.username}
               </Text>
             </TouchableOpacity>
-            <Text className="text-sm text-gray-300">Pending</Text>
             <TouchableOpacity onPress={() => handleDeleteInvite(invite)} className="ml-4 p-2 bg-gray-600 rounded-full">
               <Ionicons name="close-circle" size={20} color="white" />
             </TouchableOpacity>

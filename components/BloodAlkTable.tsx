@@ -1,9 +1,3 @@
-/************************/
-/*  Name: Tomáš Skýpala  */
-/*  Login: xskypa03     */
-/*  Date: 12.15.2024    */
-/************************/
-
 import React from 'react';
 import { LineChart } from 'react-native-chart-kit';
 import { View, Dimensions, Text } from 'react-native';
@@ -50,7 +44,7 @@ const BloodAlkTable: React.FC<BloodAlkTableProps> = ({ datasets, labels }) => {
                     color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                     labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
                     style: { borderRadius: 16 },
-                    propsForDots: { display : 'none' },
+                    propsForDots: { r: '0' },
                     propsForBackgroundLines: { display: 'none' },
                     propsForHorizontalLabels: {},
                 }}

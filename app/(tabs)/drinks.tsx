@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import DrinkTab from '@/components/DrinkTab'
 import SearchInput from '../../components/SearchInput';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { getActiveSession, getCurrentUser, getUserSessionDrinks, getUserSessionOneDrink, minusUserDrinkSessionCount, plusUserDrinkSessionCount, updateUserSessionStats } from '@aw/index';
+import { getActiveSession, getCurrentUser, getAndAssignAllDrinks, getUserSessionOneDrink, minusUserDrinkSessionCount, plusUserDrinkSessionCount, updateUserSessionStats } from '@aw/index';
 import TopBar from '@/components/TopBar';
 import { router, useFocusEffect } from 'expo-router';
 
@@ -20,7 +20,6 @@ const Drinks = () => {
   const [userDrinks, setUserDrinks] = useState<any []| null>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchText, setSearchText] = useState('');
-  const [IsGoToAddDrink, setIsGoToAddDrink] = useState(false)
 
   useFocusEffect(
     React.useCallback(() => {
@@ -52,7 +51,7 @@ const Drinks = () => {
 
       //gets user session drinks
       if (user && activeSession) {
-        const userDrinks = await getUserSessionDrinks(user.$id, activeSession.$id, query);
+        const userDrinks = await getAndAssignAllDrinks(query);
         setUserDrinks(userDrinks || []);
       }
     } catch (e) {
@@ -131,20 +130,6 @@ const Drinks = () => {
     }
   };
 
-  //redirect to add drink after button pressed
-  const goToAddDrink = async () => {
-    setIsGoToAddDrink(true);
-
-    try {
-        router.push('/drinks/addDrink');
-    } catch (e) {
-        alert(e);
-    }
-    finally {
-        setIsGoToAddDrink(false);
-    }
-  }
-
   //search function
   const Search = () => {
     fetchData(searchText);
@@ -155,36 +140,30 @@ const Drinks = () => {
       <TopBar/>
 
       <View className="h-full px-4 flex-1">
-        <View className="mt-3 flex-row items-center">
-          <View className="flex-1 mr-2">
-              <SearchInput searchText={searchText} setSearchText={setSearchText} title="Find your drink..." onSearch={Search}/>
-          </View>
-          <TouchableOpacity onPress={goToAddDrink}>
-              <View className='h-12 pl-3 px-4 mb-4 justify-center items-center rounded-lg bg-buttonBlue'>
-                  <Text className='text-2xl mt-1 ml-1'>Add drink</Text>
-              </View>
-          </TouchableOpacity>
-        </View>
-
         {isLoading && (<ActivityIndicator size="large" color="#ffffff"/>)}
 
         <ScrollView className="mt-2">
-          {userDrinks && userDrinks.length > 0 ? (
-            userDrinks.map((drink) => (
+          {(userDrinks ?? []).map((drink, idx) => {
+            // Bezpečnostní kontrola, že drink i drink.drink existuje
+            if (!drink || !drink.drink) return null;
+            return (
               <DrinkTab
-                key={drink.drink.$id}
-                title={drink.drink.name} 
-                amount={drink.quantity.toString()} 
-                plusCount={() => handlePlusCount(userData.$id, activeSession.$id, drink.drink.$id)}
-                minusCount={() => handleMinusCount(userData.$id, activeSession.$id, drink.drink.$id)}
+                key={drink.drink.$id ?? idx}
+                title={drink.drink.name ?? 'Neznámý drink'}
+                amount={drink.quantity?.toString() ?? '0'}
+                plusCount={() =>
+                  userData && activeSession
+                    ? handlePlusCount(userData.$id, activeSession.$id, drink.drink.$id)
+                    : null
+                }
+                minusCount={() =>
+                  userData && activeSession
+                    ? handleMinusCount(userData.$id, activeSession.$id, drink.drink.$id)
+                    : null
+                }
               />
-            ))
-            ) : (
-              <View className="flex items-center justify-center mt-4">
-                <Text className="text-gray-500">No drinks added yet.</Text>
-                <Text className="text-gray-500">Add drinks at the top right corner!</Text>
-              </View>
-            )}
+            );
+          })}
         </ScrollView>
       </View>
     </SafeAreaView>

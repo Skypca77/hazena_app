@@ -8,7 +8,7 @@ import { View, Text, TouchableOpacity, Image, ScrollView, Modal } from 'react-na
 import React, { useEffect, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { getCurrentUser, calculateAlcoholDataMultipleDrinks, getActiveSession, sign_out } from '@aw/index';
+import { getCurrentUser, calculateAlcoholDataMultipleDrinks, getActiveSession, sign_out, getUserPoints } from '@aw/index';
 import BloodAlkTable from '@/components/BloodAlkTable';
 import TopBar from '@/components/TopBar';
 import EditProfile from '@/components/EditProfile';
@@ -27,6 +27,7 @@ const Profile = () => {
     const [newWeight, setNewWeight] = useState('');
     const [newGender, setNewGender] = useState('');
     const [newProfilePicture, setNewProfilePicture] = useState('');
+    const [points, setPoints] = useState(0);
     const [session, setSession] = useState<any | null>(null);
     const [drinksData, setDrinksData] = useState<any[]>([]);
     const [isSubmit, setIsSubmit] = useState(false)
@@ -45,6 +46,11 @@ const Profile = () => {
                 setNewWeight(user.weight);
                 setNewGender(user.gender);
                 setNewProfilePicture(user.profile_picture);
+
+                const userpoints = await getUserPoints(user.$id)
+                if (userpoints) {
+                    setPoints(userpoints);
+                }
                 // Fetch active session data
                 const activeSession = await getActiveSession();
                 setSession(activeSession);
@@ -137,6 +143,8 @@ const Profile = () => {
                 </View>
                 {/* Displaying user details. Email, age, height, weight, gender */}
                 <View className="mt-3">
+                    <Text className="text-2xl text-white">Points: {points}</Text>
+                    <Text className="text-2xl text-white">User Details:</Text>
                     <Text className="text-sm text-gray-100">Email: {userData.email}</Text>
                     <Text className="text-sm text-gray-100">Age: {userData.age}</Text>
                     <Text className="text-sm text-gray-100">Height: {userData.height}</Text>

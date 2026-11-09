@@ -22,7 +22,7 @@ const GlobalProvider = ({ children }) => {
                 }
             })
 
-            .catch((errror) => {
+            .catch((error) => {
                 console.log(error);
             })
             
